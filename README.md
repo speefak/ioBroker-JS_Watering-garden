@@ -46,8 +46,7 @@ const safetyDelaySeconds  = 630;   // Safety timer (10:30 minutes)
 
 
 
-
---------------------------------------------------------------------------------------------------------------
+---
 
 This script was created and published free of charge for the open source community.
 If you find it useful and would like to support future development, consider making a small donation:
