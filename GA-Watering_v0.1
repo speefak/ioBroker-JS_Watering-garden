@@ -1,0 +1,68 @@
+// =============================================
+// ioBroker Wassersteuerung - Zigbee Button
+// =============================================
+
+const buttonSingle = 'zigbee.0.a4c138068ef8ffff.single';
+const buttonDouble = 'zigbee.0.a4c138068ef8ffff.double';
+const buttonLong   = 'zigbee.0.a4c138068ef8ffff.long';
+
+const valvePond    = 'zigbee.0.c02cedfffe72acf5.state_l1';   // Teich
+const valveFlower  = 'zigbee.0.c02cedfffe72acf5.state_l2';   // Blumen
+
+const wateringTime = 600;                    // Bewässerungszeit in Sekunden (10 Minuten)
+const safetyDelay  = 5 * 60 * 1000 + 10 * 1000; // 5 Minuten 10 Sekunden Sicherheits-Check
+
+// ==================== HELPER ====================
+
+function turnOn(valve) {
+    setState(valve, true, true);
+    log(`Ventil EIN: ${valve}`, 'info');
+}
+
+function turnOff(valve) {
+    setState(valve, false, true);
+    log(`Ventil AUS: ${valve}`, 'info');
+}
+
+function closeAll() {
+    turnOff(valvePond);
+    turnOff(valveFlower);
+    log('🚨 NOT-AUS: Alle Ventile geschlossen', 'warn');
+}
+
+function safetyCheck(valve, name) {
+    setTimeout(() => {
+        getState(valve, (err, state) => {
+            if (state && state.val === true) {
+                log(`⚠️ SICHERHEIT: ${name} Ventil war nach ${wateringTime}s immer noch AN → wird ausgeschaltet!`, 'warn');
+                turnOff(valve);
+            } else {
+                log(`✅ ${name} Ventil wurde rechtzeitig geschlossen`, 'info');
+            }
+        });
+    }, safetyDelay);
+}
+
+// ==================== BUTTON LOGIC ====================
+
+// Single Press → Teich bewässern
+on({id: buttonSingle, change: 'ne', val: true}, function (obj) {
+    log('🔘 Single Press → Teich-Ventil', 'info');
+    turnOn(valvePond);
+    safetyCheck(valvePond, 'Teich');
+});
+
+// Double Press → Blumen bewässern
+on({id: buttonDouble, change: 'ne', val: true}, function (obj) {
+    log('🔘 Double Press → Blumen-Ventil', 'info');
+    turnOn(valveFlower);
+    safetyCheck(valveFlower, 'Blumen');
+});
+
+// Long Press → Alles schließen
+on({id: buttonLong, change: 'ne', val: true}, function (obj) {
+    log('🔴 Long Press → NOT-AUS', 'warn');
+    closeAll();
+});
+
+log('✅ Wassersteuerung-Skript erfolgreich gestartet', 'info');
