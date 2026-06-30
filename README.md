@@ -42,6 +42,7 @@ You can adjust the following values at the top of the script:
 ```javascript
 const wateringTimeSeconds = 600;   // Device built-in timer (10 minutes)
 const safetyDelaySeconds  = 630;   // Safety timer (10:30 minutes)
+```javascript
 
 
 --------------------------------------------------------------------------------------------------------------
