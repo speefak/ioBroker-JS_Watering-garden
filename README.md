@@ -87,12 +87,12 @@ HH-GA-Watering | 🔴 Long Press → Close all valves (Pond + Flower)
 
 ## Changelog
 
-- **v1.9** (2026-06-30)
+- **v1.0** (2026-06-30)
   - Improved log formatting (fewer lines, cleaner output)
   - Long Press now shows only one log entry
   - Better suppression of duplicate messages
 
-- **v1.0** – Initial stable version
+- **v1.1** – Initial stable version
 
 --------------------------------------------------------------------------------------------------------------
 
