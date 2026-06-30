@@ -1,0 +1,124 @@
+// ======================================================
+// HH-GA-Watering Script - Haozee 2-Zone Irrigation Valve
+// ======================================================
+//
+// Description:
+//   Controls the Haozee Smart Irrigation Computer (2 outputs)
+//   via Zigbee button (Single / Double / Long press)
+//
+// Features:
+//   - Single press  → Pond / Zone 1
+//   - Double press  → Flower / Zone 2
+//   - Long press    → Emergency close all valves
+//   - Detects automatic close by device timer
+//   - Safety fallback after 10:30 minutes
+//
+// Author: SpeeFak (Grok assisted)
+// Version: 0.9
+// Date: 30.06.2026
+//
+// =======================================================
+
+// ==================== CONFIGURATION ====================
+
+const buttonSingle = 'zigbee.0.a4c138068ef8ffff.single';
+const buttonDouble = 'zigbee.0.a4c138068ef8ffff.double';
+const buttonLong   = 'zigbee.0.a4c138068ef8ffff.long';
+
+const valvePond    = 'zigbee.0.c02cedfffe72acf5.state_l1';
+const valveFlower  = 'zigbee.0.c02cedfffe72acf5.state_l2';
+
+const wateringTimeSeconds = 600;   // Device built-in timer
+const safetyDelaySeconds  = 630;   // Safety timer (10:30 minutes)
+
+// Flag to prevent duplicate logs during safety close
+let safetyClosing = false;
+
+// ==================== HELPER FUNCTIONS ====================
+
+function sendCommand(valveId, value, name) {
+    setState(valveId, value, false, (err) => {
+        if (err) log(`Error sending command to ${name}: ${err}`, 'error');
+        else log(`Command sent: ${name} → ${value ? 'OPEN' : 'CLOSED'}`, 'info');
+    });
+}
+
+function turnOn(valve, name) {
+    sendCommand(valve, true, name);
+}
+
+function turnOff(valve, name) {
+    sendCommand(valve, false, name);
+}
+
+function closeAll() {
+    turnOff(valvePond, 'Pond');
+    turnOff(valveFlower, 'Flower');
+    log('🚨 EMERGENCY CLOSE: All valves closed', 'warn');
+}
+
+// ==================== VALVE MONITORING ====================
+
+function startValveMonitoring() {
+    // Pond
+    on({id: valvePond, change: 'ne'}, (obj) => {
+        if (obj.state.val === false) {
+            if (safetyClosing) {
+                log(`Pond valve closed by SAFETY`, 'info');
+                safetyClosing = false;
+            } else {
+                log(`Pond valve closed (automatic by device after ${wateringTimeSeconds}s)`, 'info');
+            }
+        }
+    });
+
+    // Flower
+    on({id: valveFlower, change: 'ne'}, (obj) => {
+        if (obj.state.val === false) {
+            if (safetyClosing) {
+                log(`Flower valve closed by SAFETY`, 'info');
+                safetyClosing = false;
+            } else {
+                log(`Flower valve closed (automatic by device after ${wateringTimeSeconds}s)`, 'info');
+            }
+        }
+    });
+}
+
+// Safety fallback
+function safetyCheck(valve, name) {
+    setTimeout(() => {
+        getState(valve, (err, state) => {
+            if (state && state.val === true) {
+                safetyClosing = true;
+                log(`⚠️ SAFETY CLOSE: ${name} still open after ${safetyDelaySeconds}s → closing now!`, 'warn');
+                turnOff(valve, name);
+            }
+        });
+    }, safetyDelaySeconds * 1000);
+}
+
+// ==================== BUTTON LOGIC ====================
+
+on({id: buttonSingle, change: 'ne', val: true}, () => {
+    log('🔘 Single Press detected → Starting Pond watering', 'info');
+    turnOn(valvePond, 'Pond');
+    safetyCheck(valvePond, 'Pond');
+});
+
+on({id: buttonDouble, change: 'ne', val: true}, () => {
+    log('🔘 Double Press detected → Starting Flower watering', 'info');
+    turnOn(valveFlower, 'Flower');
+    safetyCheck(valveFlower, 'Flower');
+});
+
+on({id: buttonLong, change: 'ne', val: true}, () => {
+    log('🔴 Long Press detected → Emergency close all valves', 'warn');
+    closeAll();
+});
+
+// ==================== STARTUP ====================
+log(`✅ HH-GA-Watering Script started | Safety timer: ${safetyDelaySeconds}s (${Math.floor(safetyDelaySeconds/60)}:${(safetyDelaySeconds%60).toString().padStart(2,'0')})`, 'info');
+
+// Start monitoring
+startValveMonitoring();
