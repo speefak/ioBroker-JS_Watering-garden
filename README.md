@@ -41,6 +41,14 @@
 You can adjust the following values at the top of the script:
 
 ```javascript
+
+const buttonSingle = 'zigbee.0.a4c138068ef8ffff.single';  // Button action
+const buttonDouble = 'zigbee.0.a4c138068ef8ffff.double';  // Button action
+const buttonLong   = 'zigbee.0.a4c138068ef8ffff.long';    // Button action
+
+const valvePond    = 'zigbee.0.c02cedfffe72acf5.state_l1';  // Valve #1
+const valveFlower  = 'zigbee.0.c02cedfffe72acf5.state_l2';  // Valve #2
+
 const wateringTimeSeconds = 600;   // Device built-in timer (10 minutes)
 const safetyDelaySeconds  = 630;   // Safety timer (10:30 minutes)
 ```
