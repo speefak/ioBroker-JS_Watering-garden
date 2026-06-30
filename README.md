@@ -105,13 +105,3 @@ If you find it useful and would like to support future development, consider mak
 Thank you for your support! 🙏
 
 ---
-
-**Made with ❤️ for smart garden automation**
-```
-
----
-
-**Fertig zum Kopieren!**  
-Einfach alles markieren und in deine `README.md` Datei einfügen. 
-
-Viel Erfolg mit deinem Repository! 🚀
