@@ -42,27 +42,6 @@ You can adjust the following values at the top of the script:
 ```javascript
 const wateringTimeSeconds = 600;   // Device built-in timer (10 minutes)
 const safetyDelaySeconds  = 630;   // Safety timer (10:30 minutes)
-```javascript
-
-
---------------------------------------------------------------------------------------------------------------
-
-This script was created and published free of charge for the open source community.
-If you find it useful and would like to support future development, consider making a small donation:
-
-    Bitcoin (BTC): 33AXe8Z8XBuGKx9eHHmGnvbawrNYjSgDcM
-
-    Ethereum (ETH): 0xa61d178EA84C2200A8617b51B4bCf98F87ff59Ff
-
-    Solana (SOL): BDf5EgsN8fRUicYzeM8cuaNhL7zdty2qsEj2mC2jA4Fm
-
-    Ripple (XRP): rLHzPsX6oXkzU2qL12kHCH8G8cnZv1rBJh
-
-    USTether (USDT): 0xa61d178EA84C2200A8617b51B4bCf98F87ff59Ff
-
-
-Thank you for your support! 🙏
-
 
 
 
