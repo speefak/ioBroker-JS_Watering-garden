@@ -1,5 +1,3 @@
-**✅ Hier ist die komplette `README.md` Datei – fertig zum Kopieren:**
-
 ```markdown
 # HH-GA-Watering Script
 
